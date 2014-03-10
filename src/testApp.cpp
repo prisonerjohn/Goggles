@@ -26,6 +26,12 @@ void testApp::setup()
     gui->autoSizeToFitWidgets();
     ofAddListener(gui->newGUIEvent, this, &testApp::guiEvent);
     gui->loadSettings("settings/" + gui->getName() + ".xml");
+    
+    oculusRift.baseCamera = &baseCam;
+    oculusRift.setup();
+    
+    baseCam.begin();
+    baseCam.end();
 }
 
 //--------------------------------------------------------------
@@ -45,8 +51,36 @@ void testApp::update()
 //--------------------------------------------------------------
 void testApp::draw()
 {
-    eyeLeft.draw(0, 0);
-    eyeRight.draw(Eye::kGrabberWidth, 0);
+    if (oculusRift.isSetup()) {
+        oculusRift.beginLeftEye();
+        {
+            renderScene(eyeLeft);
+        }
+        oculusRift.endLeftEye();
+        
+        oculusRift.beginRightEye();
+        {
+            renderScene(eyeRight);
+        }
+        oculusRift.endRightEye();
+        
+        ofEnableDepthTest();
+        {
+            ofSetColor(ofColor::white);
+            oculusRift.draw();
+        }
+        ofDisableDepthTest();
+    }
+    else {
+        baseCam.begin();
+        {
+            renderScene(eyeLeft);
+        }
+        baseCam.end();
+    }
+    
+//    eyeLeft.draw(0, 0);
+//    eyeRight.draw(Eye::kGrabberWidth, 0);
     
 //    float ratio = ofGetHeight() / grabberLeft.width;
 //    
@@ -62,6 +96,17 @@ void testApp::draw()
 //    ofRotate(90, 0, 0, 1);
 //    grabberRight.draw(0, 0, grabberLeft.width * ratio, grabberLeft.height * ratio);
 //    ofPopMatrix();
+}
+
+//--------------------------------------------------------------
+void testApp::renderScene(Eye &eye)
+{
+    ofSetColor(120);
+	
+	ofPushMatrix();
+    ofRotate(90, 0, 0, -1);
+    ofDrawGridPlane(500.0f, 40.0f, false );
+	ofPopMatrix();
 }
 
 //--------------------------------------------------------------

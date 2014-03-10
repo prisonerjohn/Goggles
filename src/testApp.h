@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxOculusRift.h"
 #include "ofxUI.h"
 
 #include "Eye.h"
@@ -15,6 +16,7 @@ class testApp : public ofBaseApp
     
 		void update();
 		void draw();
+        void renderScene(Eye& eye);
 
         void guiEvent(ofxUIEventArgs& e);
     
@@ -28,8 +30,12 @@ class testApp : public ofBaseApp
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
+        ofEasyCam baseCam;
+        ofxOculusRift oculusRift;
+    
+        ofxUISuperCanvas *gui;
+
         Eye eyeLeft;
         Eye eyeRight;
     
-        ofxUISuperCanvas *gui;
 };
