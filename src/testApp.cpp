@@ -1,40 +1,83 @@
 #include "testApp.h"
 
 //--------------------------------------------------------------
-void testApp::setup(){
-    grabberLeft.setDeviceID(1);
-    grabberLeft.initGrabber(640, 360);
+void testApp::setup()
+{
+    gui = new ofxUISuperCanvas("GOGGLES");
+    gui->setName("GOGGLES");
+    gui->addFPS();
 
-    grabberRight.setDeviceID(2);
-    grabberRight.initGrabber(640, 360);
+    gui->addSpacer();
+    gui->addLabel("LEFT EYE");
+    gui->addIntSlider("LEFT DEVICE ID", 0, 5, 0);
+    gui->addSlider("LEFT ROI X", 0, Eye::kGrabberWidth, &eyeLeft.roiX());
+    gui->addSlider("LEFT ROI Y", 0, Eye::kGrabberHeight, &eyeLeft.roiY());
+    gui->addSlider("LEFT ROI WIDTH", 0, Eye::kGrabberWidth, &eyeLeft.roiWidth());
+    gui->addSlider("LEFT ROI HEIGHT", 0, Eye::kGrabberHeight, &eyeLeft.roiHeight());
+
+    gui->addSpacer();
+    gui->addLabel("RIGHT EYE");
+    gui->addIntSlider("RIGHT DEVICE ID", 0, 5, 0);
+    gui->addSlider("RIGHT ROI X", 0, Eye::kGrabberWidth, &eyeRight.roiX());
+    gui->addSlider("RIGHT ROI Y", 0, Eye::kGrabberHeight, &eyeRight.roiY());
+    gui->addSlider("RIGHT ROI WIDTH", 0, Eye::kGrabberWidth, &eyeRight.roiWidth());
+    gui->addSlider("RIGHT ROI HEIGHT", 0, Eye::kGrabberHeight, &eyeRight.roiHeight());
+
+    gui->autoSizeToFitWidgets();
+    ofAddListener(gui->newGUIEvent, this, &testApp::guiEvent);
+    gui->loadSettings("settings/" + gui->getName() + ".xml");
 }
 
 //--------------------------------------------------------------
-void testApp::update(){
-    grabberLeft.update();
-    grabberRight.update();
+void testApp::exit()
+{
+    gui->saveSettings("settings/" + gui->getName() + ".xml");
+    delete gui;
 }
 
 //--------------------------------------------------------------
-void testApp::draw(){
-    float ratio = ofGetHeight() / grabberLeft.width;
+void testApp::update()
+{
+    eyeLeft.update();
+    eyeRight.update();
+}
+
+//--------------------------------------------------------------
+void testApp::draw()
+{
+    eyeLeft.draw(0, 0);
+    eyeRight.draw(Eye::kGrabberWidth, 0);
     
-    ofPushMatrix();
-    ofTranslate(grabberLeft.height * ratio, 0);
-    ofRotate(90, 0, 0, 1);
-    grabberLeft.draw(0, 0, grabberLeft.width * ratio, grabberLeft.height * ratio);
-    ofPopMatrix();
-    
-    ofPushMatrix();
-    ofTranslate(grabberLeft.height * ratio, 0);
-    ofTranslate(grabberRight.height * ratio, 0);
-    ofRotate(90, 0, 0, 1);
-    grabberRight.draw(0, 0, grabberLeft.width * ratio, grabberLeft.height * ratio);
-    ofPopMatrix();
+//    float ratio = ofGetHeight() / grabberLeft.width;
+//    
+//    ofPushMatrix();
+//    ofTranslate(grabberLeft.height * ratio, 0);
+//    ofRotate(90, 0, 0, 1);
+//    grabberLeft.draw(0, 0, grabberLeft.width * ratio, grabberLeft.height * ratio);
+//    ofPopMatrix();
+//    
+//    ofPushMatrix();
+//    ofTranslate(grabberLeft.height * ratio, 0);
+//    ofTranslate(grabberRight.height * ratio, 0);
+//    ofRotate(90, 0, 0, 1);
+//    grabberRight.draw(0, 0, grabberLeft.width * ratio, grabberLeft.height * ratio);
+//    ofPopMatrix();
 }
 
 //--------------------------------------------------------------
-void testApp::keyPressed(int key){
+void testApp::guiEvent(ofxUIEventArgs& e)
+{
+    if (e.getName() == "LEFT DEVICE ID") {
+        eyeLeft.setup(e.getSlider()->getScaledValue());
+    }
+    else if (e.getName() == "RIGHT DEVICE ID") {
+        eyeRight.setup(e.getSlider()->getScaledValue());
+    }
+}
+
+//--------------------------------------------------------------
+void testApp::keyPressed(int key)
+{
     if (key == 'f') {
         ofToggleFullscreen();
     }

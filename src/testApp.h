@@ -1,14 +1,23 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxUI.h"
 
-class testApp : public ofBaseApp{
+#include "Eye.h"
 
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+class testApp : public ofBaseApp
+{
 	public:
 		void setup();
+        void exit();
+    
 		void update();
 		void draw();
 
+        void guiEvent(ofxUIEventArgs& e);
+    
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -19,7 +28,8 @@ class testApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
-        ofVideoGrabber grabberLeft;
-        ofVideoGrabber grabberRight;
+        Eye eyeLeft;
+        Eye eyeRight;
     
+        ofxUISuperCanvas *gui;
 };
