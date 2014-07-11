@@ -9,6 +9,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxPostProcessing.h"
 
 //--------------------------------------------------------------
 //--------------------------------------------------------------
@@ -27,6 +28,8 @@ public:
     float& roiWidth();
     float& roiHeight();
     
+    ofxPostProcessing& postProcessing();
+    
     static int kGrabberWidth;
     static int kGrabberHeight;
 
@@ -35,5 +38,7 @@ protected:
     int mDeviceID;
     
     ofRectangle mROI;
+    
+    ofxPostProcessing mPostProcessing;
 };
 

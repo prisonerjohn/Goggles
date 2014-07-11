@@ -1,8 +1,16 @@
-#include "testApp.h"
+#include "ofApp.h"
 
 //--------------------------------------------------------------
-void testApp::setup()
+void ofApp::setup()
 {
+    ofVideoGrabber grabber;
+    vector<ofVideoDevice> devices = grabber.listDevices();
+    for (int i = 0; i < devices.size(); i++) {
+        cout << i << ": " << devices[i].deviceName << " // " << devices[i].hardwareName << endl;
+    }
+    
+    oculusRift.setup();
+    
     gui = new ofxUISuperCanvas("GOGGLES");
     gui->setName("GOGGLES");
     gui->addFPS();
@@ -22,106 +30,73 @@ void testApp::setup()
     gui->addSlider("RIGHT ROI Y", 0, Eye::kGrabberHeight, &eyeRight.roiY());
     gui->addSlider("RIGHT ROI WIDTH", 0, Eye::kGrabberWidth, &eyeRight.roiWidth());
     gui->addSlider("RIGHT ROI HEIGHT", 0, Eye::kGrabberHeight, &eyeRight.roiHeight());
+    
+    gui->addSpacer();
+    gui->addLabel("POST PROCESSING");
+    for (int i = 0; i < eyeLeft.postProcessing().getPasses().size(); i++) {
+        gui->addToggle(ofToUpper(eyeLeft.postProcessing()[i]->getName()), &eyeLeft.postProcessing()[i]->getEnabledRef());
+    }
 
     gui->autoSizeToFitWidgets();
-    ofAddListener(gui->newGUIEvent, this, &testApp::guiEvent);
+    ofAddListener(gui->newGUIEvent, this, &ofApp::guiEvent);
     gui->loadSettings("settings/" + gui->getName() + ".xml");
-    
-    oculusRift.baseCamera = &baseCam;
-    oculusRift.setup();
-    
-    baseCam.begin();
-    baseCam.end();
 }
 
 //--------------------------------------------------------------
-void testApp::exit()
+void ofApp::exit()
 {
     gui->saveSettings("settings/" + gui->getName() + ".xml");
     delete gui;
 }
 
 //--------------------------------------------------------------
-void testApp::update()
+void ofApp::update()
 {
     eyeLeft.update();
     eyeRight.update();
 }
 
 //--------------------------------------------------------------
-void testApp::draw()
+void ofApp::draw()
 {
-    if (oculusRift.isSetup()) {
-        oculusRift.beginLeftEye();
-        {
-            renderScene(eyeLeft);
-        }
-        oculusRift.endLeftEye();
-        
-        oculusRift.beginRightEye();
-        {
-            renderScene(eyeRight);
-        }
-        oculusRift.endRightEye();
-        
-        ofEnableDepthTest();
-        {
-            ofSetColor(ofColor::white);
-            oculusRift.draw();
-        }
-        ofDisableDepthTest();
+    ofPushMatrix();
+    ofTranslate(ofGetWidth(), 0);
+    ofRotate(90, 0, 0, 1);
+//    ofTranslate(0, ofGetHeight());
+//    ofRotate(-90, 0, 0, 1);
+    {
+//        postProcessing.begin();
+        eyeLeft.draw(0, 0, ofGetHeight(), ofGetWidth() * 0.5f);
+//        postProcessing.end();
+//        ofTranslate(0, ofGetWidth() * 0.5f);
+//        postProcessing.begin();
+        eyeRight.draw(0, ofGetWidth() * 0.5f, ofGetHeight(), ofGetWidth() * 0.5f);
+//        postProcessing.end();
     }
-    else {
-        baseCam.begin();
-        {
-            renderScene(eyeLeft);
-        }
-        baseCam.end();
-    }
-    
-//    eyeLeft.draw(0, 0);
-//    eyeRight.draw(Eye::kGrabberWidth, 0);
-    
-//    float ratio = ofGetHeight() / grabberLeft.width;
-//    
-//    ofPushMatrix();
-//    ofTranslate(grabberLeft.height * ratio, 0);
-//    ofRotate(90, 0, 0, 1);
-//    grabberLeft.draw(0, 0, grabberLeft.width * ratio, grabberLeft.height * ratio);
-//    ofPopMatrix();
-//    
-//    ofPushMatrix();
-//    ofTranslate(grabberLeft.height * ratio, 0);
-//    ofTranslate(grabberRight.height * ratio, 0);
-//    ofRotate(90, 0, 0, 1);
-//    grabberRight.draw(0, 0, grabberLeft.width * ratio, grabberLeft.height * ratio);
-//    ofPopMatrix();
+    ofPopMatrix();
 }
 
 //--------------------------------------------------------------
-void testApp::renderScene(Eye &eye)
-{
-    ofSetColor(120);
-	
-	ofPushMatrix();
-    ofRotate(90, 0, 0, -1);
-    ofDrawGridPlane(500.0f, 40.0f, false );
-	ofPopMatrix();
-}
-
-//--------------------------------------------------------------
-void testApp::guiEvent(ofxUIEventArgs& e)
+void ofApp::guiEvent(ofxUIEventArgs& e)
 {
     if (e.getName() == "LEFT DEVICE ID") {
-        eyeLeft.setup(e.getSlider()->getScaledValue());
+        ofxUIIntSlider *intSlider = (ofxUIIntSlider *)e.widget;
+        eyeLeft.setup(intSlider->getValue());
     }
     else if (e.getName() == "RIGHT DEVICE ID") {
-        eyeRight.setup(e.getSlider()->getScaledValue());
+        ofxUIIntSlider *intSlider = (ofxUIIntSlider *)e.widget;
+        eyeRight.setup(intSlider->getValue());
+    }
+    else {
+        // Make sure all render passes are identical for both eyes.
+        for (int i = 0; i < eyeLeft.postProcessing().getPasses().size(); i++) {
+            eyeRight.postProcessing()[i]->setEnabled(eyeLeft.postProcessing()[i]->getEnabled());
+        }
     }
 }
 
 //--------------------------------------------------------------
-void testApp::keyPressed(int key)
+void ofApp::keyPressed(int key)
 {
     if (key == 'f') {
         ofToggleFullscreen();
@@ -129,41 +104,41 @@ void testApp::keyPressed(int key)
 }
 
 //--------------------------------------------------------------
-void testApp::keyReleased(int key){
+void ofApp::keyReleased(int key){
 
 }
 
 //--------------------------------------------------------------
-void testApp::mouseMoved(int x, int y ){
+void ofApp::mouseMoved(int x, int y ){
 
 }
 
 //--------------------------------------------------------------
-void testApp::mouseDragged(int x, int y, int button){
+void ofApp::mouseDragged(int x, int y, int button){
 
 }
 
 //--------------------------------------------------------------
-void testApp::mousePressed(int x, int y, int button){
+void ofApp::mousePressed(int x, int y, int button){
 
 }
 
 //--------------------------------------------------------------
-void testApp::mouseReleased(int x, int y, int button){
+void ofApp::mouseReleased(int x, int y, int button){
 
 }
 
 //--------------------------------------------------------------
-void testApp::windowResized(int w, int h){
+void ofApp::windowResized(int w, int h){
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::gotMessage(ofMessage msg){
 
 }
 
 //--------------------------------------------------------------
-void testApp::gotMessage(ofMessage msg){
-
-}
-
-//--------------------------------------------------------------
-void testApp::dragEvent(ofDragInfo dragInfo){ 
+void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
