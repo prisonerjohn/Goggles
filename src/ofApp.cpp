@@ -116,16 +116,6 @@ void ofApp::draw()
 //--------------------------------------------------------------
 void ofApp::renderScene(Eye& eye)
 {
-    // Render some debug stuff.
-    ofDrawAxis(100);
-    
-    ofPushMatrix();
-    {
-        ofRotate(90, 0, 0, -1);
-        ofDrawGridPlane(500.0f, 40.0f, false);
-    }
-	ofPopMatrix();
-    
     // Render the overlay
     ofPushStyle();
     ofPushMatrix();
