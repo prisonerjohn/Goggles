@@ -16,7 +16,8 @@ public:
 
     void update();
     void draw();
-
+    void renderScene(Eye& eye);
+    
     void guiEvent(ofxUIEventArgs& e);
 
     void keyPressed(int key);
@@ -29,10 +30,13 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
+    ofEasyCam baseCam;
     ofxOculusRift oculusRift;
 
     ofxUISuperCanvas *gui;
 
     Eye eyeLeft;
     Eye eyeRight;
+    
+    bool bDebug;
 };

@@ -8,6 +8,7 @@
 
 #include "Eye.h"
 
+//--------------------------------------------------------------
 int Eye::kGrabberWidth  = 640;
 int Eye::kGrabberHeight = 360;
 
@@ -16,6 +17,8 @@ Eye::Eye()
 {
     mDeviceID = -1;
     mROI.set(0, 0, kGrabberWidth, kGrabberHeight);
+    
+    mOverlayZ = -150.0f;
     
 //    mPostProcessing.createPass<BleachBypassPass>()->setEnabled(false);
 //    mPostProcessing.createPass<BloomPass>()->setEnabled(false);
@@ -69,52 +72,85 @@ void Eye::update()
     
     if (mPostProcessing.getWidth() != mGrabber.getWidth() || mPostProcessing.getHeight() != mGrabber.getHeight()) {
         mPostProcessing.init(mGrabber.getWidth(), mGrabber.getHeight());
+        mPostProcessing.setFlip(false);
     }
     
+    beginOverlay();
     mPostProcessing.begin();
     {
         ofSetColor(ofColor::white);
         mGrabber.draw(0, 0);
     }
-    mPostProcessing.end(false);
+    mPostProcessing.end();
+    endOverlay();
 }
 
 //--------------------------------------------------------------
-void Eye::draw(int x, int y , int width, int height)
+void Eye::draw()
 {
     if (!mGrabber.isInitialized()) return;
     
-    ofSetColor(ofColor::white);
-    mPostProcessing.getProcessedTextureReference().drawSubsection(x, y, width, height,
-                                                                  mROI.x, mROI.y, mROI.width, mROI.height);
+    mOverlayTarget.getTextureReference().bind();
+    {
+        mOverlayMesh.draw();
+    }
+    mOverlayTarget.getTextureReference().unbind();
 }
 
 //--------------------------------------------------------------
-float& Eye::roiX()
+void Eye::debug(int x, int y , float scale)
 {
-    return mROI.x;
+    if (!mGrabber.isInitialized()) return;
+    
+    ofPushStyle();
+    ofPushMatrix();
+    {
+        ofTranslate(x, y);
+        ofScale(scale, scale);
+        
+        ofSetColor(ofColor::white);
+        mGrabber.draw(0, 0);
+    
+        ofSetColor(ofColor::red);
+        ofNoFill();
+        ofRect(mROI);
+    }
+    ofPopMatrix();
+    ofPopStyle();
 }
 
 //--------------------------------------------------------------
-float& Eye::roiY()
+void Eye::beginOverlay()
 {
-    return mROI.y;
+	if (mOverlayTarget.getWidth() != mGrabber.getWidth() || mOverlayTarget.getHeight() != mGrabber.getHeight()) {
+		mOverlayTarget.allocate(mGrabber.getWidth(), mGrabber.getHeight(), GL_RGBA, 4);
+	}
+	
+	mOverlayMesh.clear();
+	ofRectangle overlayrect = ofRectangle(mROI.width * -0.5f, mROI.height * -0.5f, mROI.width, mROI.height);
+	mOverlayMesh.addVertex(ofVec3f(overlayrect.getMinX(), overlayrect.getMinY(), mOverlayZ));
+	mOverlayMesh.addVertex(ofVec3f(overlayrect.getMaxX(), overlayrect.getMinY(), mOverlayZ));
+	mOverlayMesh.addVertex(ofVec3f(overlayrect.getMinX(), overlayrect.getMaxY(), mOverlayZ));
+	mOverlayMesh.addVertex(ofVec3f(overlayrect.getMaxX(), overlayrect.getMaxY(), mOverlayZ));
+    
+	mOverlayMesh.addTexCoord(ofVec2f(mROI.x, mROI.y + mROI.height));
+	mOverlayMesh.addTexCoord(ofVec2f(mROI.x + mROI.width, mROI.y + mROI.height));
+	mOverlayMesh.addTexCoord(ofVec2f(mROI.x, mROI.y));
+	mOverlayMesh.addTexCoord(ofVec2f(mROI.x + mROI.width, mROI.y));
+	
+	mOverlayMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+	
+	mOverlayTarget.begin();
+    ofClear(0, 0);
+	
+    ofPushView();
+    ofPushMatrix();
 }
 
 //--------------------------------------------------------------
-float& Eye::roiWidth()
+void Eye::endOverlay()
 {
-    return mROI.width;
-}
-
-//--------------------------------------------------------------
-float& Eye::roiHeight()
-{
-    return mROI.height;
-}
-
-//--------------------------------------------------------------
-ofxPostProcessing& Eye::postProcessing()
-{
-    return mPostProcessing;
+    ofPopMatrix();
+    ofPopView();
+    mOverlayTarget.end();
 }

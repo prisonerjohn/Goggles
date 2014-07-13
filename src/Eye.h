@@ -21,14 +21,20 @@ public:
     bool setup(int deviceID);
     
     void update();
-    void draw(int x, int y, int width = kGrabberWidth, int height = kGrabberHeight);
+    void draw();
+    void debug(int x, int y, float scale = 1.0f);
     
-    float& roiX();
-    float& roiY();
-    float& roiWidth();
-    float& roiHeight();
+    float& roiX() { return mROI.x; }
+    float& roiY() { return mROI.y; }
+    float& roiWidth() { return mROI.width; }
+    float& roiHeight() { return mROI.height; }
     
-    ofxPostProcessing& postProcessing();
+    void setOverlayZ(float overlayZ) { mOverlayZ = overlayZ; }
+    float& overlayZ() { return mOverlayZ; }
+    ofMesh& overlayMesh() { return mOverlayMesh; }
+    ofFbo& overlayTarget() { return mOverlayTarget; }
+    
+    ofxPostProcessing& postProcessing() { return mPostProcessing; }
     
     static int kGrabberWidth;
     static int kGrabberHeight;
@@ -36,8 +42,13 @@ public:
 protected:
     ofVideoGrabber mGrabber;
     int mDeviceID;
-    
     ofRectangle mROI;
+    
+    void beginOverlay();
+    void endOverlay();
+    float mOverlayZ;
+    ofMesh mOverlayMesh;
+    ofFbo mOverlayTarget;
     
     ofxPostProcessing mPostProcessing;
 };
