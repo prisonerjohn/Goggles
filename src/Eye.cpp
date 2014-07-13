@@ -19,6 +19,8 @@ Eye::Eye()
     mROI.set(0, 0, kGrabberWidth, kGrabberHeight);
     
     mOverlayZ = -150.0f;
+    mRotation = 0;
+    bFlip = false;
     
 //    mPostProcessing.createPass<BleachBypassPass>()->setEnabled(false);
 //    mPostProcessing.createPass<BloomPass>()->setEnabled(false);
@@ -72,8 +74,8 @@ void Eye::update()
     
     if (mPostProcessing.getWidth() != mGrabber.getWidth() || mPostProcessing.getHeight() != mGrabber.getHeight()) {
         mPostProcessing.init(mGrabber.getWidth(), mGrabber.getHeight());
-        mPostProcessing.setFlip(false);
     }
+    mPostProcessing.setFlip(bFlip);
     
     beginOverlay();
     mPostProcessing.begin();
@@ -90,11 +92,15 @@ void Eye::draw()
 {
     if (!mGrabber.isInitialized()) return;
     
+    ofPushMatrix();
     mOverlayTarget.getTextureReference().bind();
     {
+        ofRotate(mRotation, 0, 0, 1);
+        
         mOverlayMesh.draw();
     }
     mOverlayTarget.getTextureReference().unbind();
+    ofPopMatrix();
 }
 
 //--------------------------------------------------------------

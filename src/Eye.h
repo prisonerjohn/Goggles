@@ -34,6 +34,9 @@ public:
     ofMesh& overlayMesh() { return mOverlayMesh; }
     ofFbo& overlayTarget() { return mOverlayTarget; }
     
+    int& rotation() { return mRotation; }
+    bool& flip() { return bFlip; }
+    
     ofxPostProcessing& postProcessing() { return mPostProcessing; }
     
     static int kGrabberWidth;
@@ -49,6 +52,9 @@ protected:
     float mOverlayZ;
     ofMesh mOverlayMesh;
     ofFbo mOverlayTarget;
+    
+    int mRotation;
+    bool bFlip;
     
     ofxPostProcessing mPostProcessing;
 };

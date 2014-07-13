@@ -29,6 +29,8 @@ void ofApp::setup()
     gui->addSlider("LEFT ROI Y", 0, Eye::kGrabberHeight, &eyeLeft.roiY());
     gui->addSlider("LEFT ROI WIDTH", 0, Eye::kGrabberWidth, &eyeLeft.roiWidth());
     gui->addSlider("LEFT ROI HEIGHT", 0, Eye::kGrabberHeight, &eyeLeft.roiHeight());
+    gui->addIntSlider("LEFT ROTATION", 0, 359, &eyeLeft.rotation());
+    gui->addToggle("LEFT FLIP", &eyeLeft.flip());
 
     gui->addSpacer();
     gui->addLabel("RIGHT EYE");
@@ -38,6 +40,9 @@ void ofApp::setup()
     gui->addSlider("RIGHT ROI WIDTH", 0, Eye::kGrabberWidth, &eyeRight.roiWidth());
     gui->addSlider("RIGHT ROI HEIGHT", 0, Eye::kGrabberHeight, &eyeRight.roiHeight());
     
+    gui->addIntSlider("RIGHT ROTATION", 0, 359, &eyeRight.rotation());
+    gui->addToggle("RIGHT FLIP", &eyeRight.flip());
+
     gui->addSpacer();
     gui->addLabel("OCULUS RIFT");
     gui->addSlider("OVERLAY Z", -200, 0, &eyeLeft.overlayZ());
