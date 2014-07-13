@@ -164,6 +164,16 @@ void ofApp::keyPressed(int key)
     if (key == 'f') {
         ofToggleFullscreen();
     }
+    else if (key == 'h') {
+        gui->toggleVisible();
+    }
+    else {
+        unsigned idx = key - '0';
+        if (idx < eyeLeft.postProcessing().size()) {
+            eyeLeft.postProcessing()[idx]->setEnabled(!eyeLeft.postProcessing()[idx]->getEnabled());
+            eyeRight.postProcessing()[idx]->setEnabled(eyeLeft.postProcessing()[idx]->getEnabled());
+        }
+    }
 }
 
 //--------------------------------------------------------------
