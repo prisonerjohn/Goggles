@@ -25,27 +25,26 @@ void ofApp::setup()
     gui->addSpacer();
     gui->addLabel("LEFT EYE");
     gui->addIntSlider("LEFT DEVICE ID", 0, 5, 0);
-    gui->addSlider("LEFT ROI X", 0, Eye::kGrabberWidth, &eyeLeft.roiX());
-    gui->addSlider("LEFT ROI Y", 0, Eye::kGrabberHeight, &eyeLeft.roiY());
-    gui->addSlider("LEFT ROI WIDTH", 0, Eye::kGrabberWidth, &eyeLeft.roiWidth());
-    gui->addSlider("LEFT ROI HEIGHT", 0, Eye::kGrabberHeight, &eyeLeft.roiHeight());
+    gui->addMinimalSlider("LEFT ROI X", 0, Eye::kGrabberWidth, &eyeLeft.roiX());
+    gui->addMinimalSlider("LEFT ROI Y", 0, Eye::kGrabberHeight, &eyeLeft.roiY());
+    gui->addMinimalSlider("LEFT ROI WIDTH", 0, Eye::kGrabberWidth, &eyeLeft.roiWidth());
+    gui->addMinimalSlider("LEFT ROI HEIGHT", 0, Eye::kGrabberHeight, &eyeLeft.roiHeight());
     gui->addIntSlider("LEFT ROTATION", 0, 359, &eyeLeft.rotation());
     gui->addToggle("LEFT FLIP", &eyeLeft.flip());
 
     gui->addSpacer();
     gui->addLabel("RIGHT EYE");
     gui->addIntSlider("RIGHT DEVICE ID", 0, 5, 0);
-    gui->addSlider("RIGHT ROI X", 0, Eye::kGrabberWidth, &eyeRight.roiX());
-    gui->addSlider("RIGHT ROI Y", 0, Eye::kGrabberHeight, &eyeRight.roiY());
-    gui->addSlider("RIGHT ROI WIDTH", 0, Eye::kGrabberWidth, &eyeRight.roiWidth());
-    gui->addSlider("RIGHT ROI HEIGHT", 0, Eye::kGrabberHeight, &eyeRight.roiHeight());
-    
+    gui->addMinimalSlider("RIGHT ROI X", 0, Eye::kGrabberWidth, &eyeRight.roiX());
+    gui->addMinimalSlider("RIGHT ROI Y", 0, Eye::kGrabberHeight, &eyeRight.roiY());
+    gui->addMinimalSlider("RIGHT ROI WIDTH", 0, Eye::kGrabberWidth, &eyeRight.roiWidth());
+    gui->addMinimalSlider("RIGHT ROI HEIGHT", 0, Eye::kGrabberHeight, &eyeRight.roiHeight());
     gui->addIntSlider("RIGHT ROTATION", 0, 359, &eyeRight.rotation());
     gui->addToggle("RIGHT FLIP", &eyeRight.flip());
 
     gui->addSpacer();
     gui->addLabel("OCULUS RIFT");
-    gui->addSlider("OVERLAY Z", -200, 0, &eyeLeft.overlayZ());
+    gui->addMinimalSlider("OVERLAY Z", -200, 0, &eyeLeft.overlayZ());
     
     gui->addSpacer();
     gui->addLabel("POST PROCESSING");
